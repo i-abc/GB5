@@ -36,7 +36,7 @@ GB5_official_sha256=32037e55c3dc8f360fe16b7fbb188d31387ea75980e48d8cf028330e3239
 mkdir ./GB5-test-32037e55c3
 
 # 下载GB5测试程序
-_yellow "GB5测试程序下载中"
+_yellow "GB5测试程序下载中(该文件较大)"
 curl --progress-bar -o ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5/main/Geekbench-5/Geekbench-5.5.1-Linux.tar.gz
 _blue "GB5测试程序下载完成\n"
 
