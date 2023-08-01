@@ -7,7 +7,7 @@
 ## 使用方法
 
 ```
-bash <(wget -qO- https://fastly.jsdelivr.net/gh/i-abc/GB5@main/gb5-test.sh)
+bash <(wget -qO- https://cdn.staticaly.com/gh/i-abc/GB5/main/gb5-test.sh)
 ```
 
 ## 使用截图
