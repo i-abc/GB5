@@ -26,14 +26,53 @@ echo -e '#        https://github.com/i-abc/gb5          #'
 echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
 echo
 
+
 # 删除可能存在的残余文件
 rm -rf ./GB5-test-32037e55c3
 
-# 官方文件的SHA-256值
-GB5_official_sha256=32037e55c3dc8f360fe16b7fbb188d31387ea75980e48d8cf028330e3239c404
-
 # 创建工作目录
 mkdir ./GB5-test-32037e55c3
+
+# 检测内存
+mem=$(free -m | awk '/Mem/{print $2}')
+old_swap=$(free -m | awk '/Swap/{print $2}')
+ms=$((mem+old_swap))
+echo -e "
+本机内存为：${mem}Mi\n\
+本机Swap为：${old_swap}Mi\n\
+本机内存加Swap总计：${ms}Mi"
+
+# 判断内存+Swap是否小于1G
+if [ "$ms" -ge 1024 ]
+then
+    echo "经判断，本机内存加Swap和大于1G，满足GB5测试条件，测试开始。"
+else
+    echo "经判断，本机内存加Swap和小于1G，不满足GB5测试条件，有如下解决方案："
+    echo -e "
+1. 添加Swap（该操作脚本自动完成，且在GB5测试结束后会把本机恢复原样）\n\
+2. 退出测试"
+    echo "请输入您的选择："
+    # 添加Swap
+    read -r choice
+    case "$choice" in
+        2)
+            rm -rf ./GB5-test-32037e55c3
+            exit;;
+        1)
+            need_swap=$((1100-ms))
+            dd if=/dev/zero of=./GB5-test-32037e55c3/dd bs=1M count="$need_swap"
+            chmod 600 ./GB5-test-32037e55c3/dd
+            mkswap ./GB5-test-32037e55c3/dd
+            swapon ./GB5-test-32037e55c3/dd;;
+        *)
+            rm -rf ./GB5-test-32037e55c3
+            echo "输入错误，请重新执行脚本"
+            exit;;
+    esac
+fi
+
+# 官方文件的SHA-256值
+GB5_official_sha256=32037e55c3dc8f360fe16b7fbb188d31387ea75980e48d8cf028330e3239c404
 
 # 下载GB5测试程序
 _yellow "GB5测试程序下载中(该文件较大)"
@@ -50,7 +89,7 @@ then
     _blue "经比对，下载的程序与官网SHA-256相同，放心使用\n"
 else
     _red "经比对，下载的程序与官网SHA-256不相同，退出脚本执行"
-    _red "事关重大。方便的话麻烦到 https://github.com/i-abc/gb5 提一个issue"
+    _red "事关重大，方便的话麻烦到 https://github.com/i-abc/gb5 提一个issue"
     exit
 fi
 
@@ -66,4 +105,6 @@ _yellow "测试中"
 _blue "⬆将链接复制到浏览器即可查看详细结果⬆"
 
 # 删除残余文件
+swapoff ./GB5-test-32037e55c3/dd &> /dev/null
 rm -rf ./GB5-test-32037e55c3
+echo "残余文件清除成功"
