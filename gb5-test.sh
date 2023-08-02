@@ -33,21 +33,21 @@ rm -rf ./GB5-test-32037e55c3
 mkdir ./GB5-test-32037e55c3
 
 # 检测curl是否安装
-if ! command -v curl
+if ! command -v curl &> /dev/null
 then
     # 安装curl
-    if command -v dnf
+    if command -v dnf &> /dev/null
     then
         dnf -y install curl
-    elif command -v yum
+    elif command -v yum &> /dev/null
     then
         yum -y install curl
-    elif command -v apt
+    elif command -v apt &> /dev/null
     then
         apt -y install curl
     fi
     # 再次检测curl是否安装成功
-    if ! command -v curl
+    if ! command -v curl &> /dev/null
     then
         exit
     fi
@@ -57,27 +57,28 @@ fi
 mem=$(free -m | awk '/Mem/{print $2}')
 old_swap=$(free -m | awk '/Swap/{print $2}')
 old_ms=$((mem+old_swap))
-echo -e "本机内存为：${mem}Mi"
-echo -e "本机Swap为：${old_swap}Mi"
-echo -e "本机内存加Swap总计：${old_ms}Mi"
+_blue "本机内存为：${mem}Mi"
+_blue "本机Swap为：${old_swap}Mi"
+_blue "本机内存加Swap总计：${old_ms}Mi\n"
 
 # 判断内存+Swap是否小于1G
 if [ "$old_ms" -ge 1024 ]
 then
-    echo "经判断，本机内存加Swap和大于1G，满足GB5测试条件，测试开始。"
+    _yellow "经判断，本机内存加Swap和大于1G，满足GB5测试条件，测试开始。\n"
 else
     echo "经判断，本机内存加Swap和小于1G，不满足GB5测试条件，有如下解决方案："
-    echo -e "1. 添加Swap（该操作脚本自动完成，且在GB5测试结束后会把本机恢复原样）"
-    echo -e "2. 退出测试"
-    echo -e "请输入您的选择：\c"
+    echo "1. 添加Swap (该操作脚本自动完成，且在GB5测试结束后会把本机恢复原样)"
+    echo -e "2. 退出测试\n"
+    _yellow "请输入您的选择 (序号)：\c"
     # 添加Swap
     read -r choice_1
+    echo -e "\033[0m"
     case "$choice_1" in
         2)
             rm -rf ./GB5-test-32037e55c3
             exit;;
         1)
-            echo "添加Swap任务开始，完成时间取决于硬盘速度，请耐心等候"
+            _yellow "添加Swap任务开始，完成时间取决于硬盘速度，请耐心等候\n"
             need_swap=$((1100-old_ms))
             dd if=/dev/zero of=./GB5-test-32037e55c3/dd bs=1M count="$need_swap"
             chmod 600 ./GB5-test-32037e55c3/dd
@@ -88,13 +89,16 @@ else
             new_ms=$((mem+new_swap))
             if [ "$new_ms" -ge 1024 ]
             then
-                echo "经判断，现在内存加Swap和为${new_ms}Mi，满足GB5测试条件，测试开始。"
+                echo
+                _blue "经判断，现在内存加Swap和为${new_ms}Mi，满足GB5测试条件，测试开始。\n"
             else
+                echo
                 echo "很抱歉，由于未知原因，Swap未能成功新增，现在内存加Swap和为${new_ms}Mi，仍不满足GB5测试条件，有如下备选方案："
-                echo -e "1. 强制执行GB5测试"
-                echo -e "2. 退出测试"
-                echo -e "请输入您的选择：\c"
+                echo "1. 强制执行GB5测试"
+                echo -e "2. 退出测试\n"
+                _yellow "请输入您的选择 (序号)：\c"
                 read -r choice_2
+                echo -e "\033[0m"
                 case "$choice_2" in
                     2)
                         swapoff ./GB5-test-32037e55c3/dd &> /dev/null
@@ -104,13 +108,13 @@ else
                         echo ;;
                     *)
                         rm -rf ./GB5-test-32037e55c3
-                        echo "输入错误，请重新执行脚本"
+                        _red "输入错误，请重新执行脚本"
                         exit;;
                 esac
             fi;;
         *)
             rm -rf ./GB5-test-32037e55c3
-            echo "输入错误，请重新执行脚本"
+            _red "输入错误，请重新执行脚本"
             exit;;
     esac
 fi
@@ -119,7 +123,7 @@ fi
 GB5_official_sha256=32037e55c3dc8f360fe16b7fbb188d31387ea75980e48d8cf028330e3239c404
 
 # 下载GB5测试程序
-_yellow "GB5测试程序下载中(该文件较大)"
+_yellow "GB5测试程序下载中 (该文件较大)"
 curl --progress-bar -o ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5/main/Geekbench-5/Geekbench-5.5.1-Linux.tar.gz
 _blue "GB5测试程序下载完成\n"
 
@@ -151,4 +155,4 @@ _blue "⬆将链接复制到浏览器即可查看详细结果⬆"
 # 删除残余文件
 swapoff ./GB5-test-32037e55c3/dd &> /dev/null
 rm -rf ./GB5-test-32037e55c3
-echo "残余文件清除成功"
+_yellow "残余文件清除成功"
