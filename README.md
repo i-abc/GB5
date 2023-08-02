@@ -26,5 +26,5 @@ bash <(wget -qO- https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5
 
 ## 待办
 
-- [] 将分数直接展示到终端
-- [] 在测试后会提供同种 CPU 的对比
+- [ ] 将分数直接展示到终端
+- [ ] 在测试后会提供同种 CPU 的对比
