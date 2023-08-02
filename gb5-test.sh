@@ -26,12 +26,32 @@ echo -e '#        https://github.com/i-abc/gb5          #'
 echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
 echo
 
-
 # 删除可能存在的残余文件
 rm -rf ./GB5-test-32037e55c3
 
 # 创建工作目录
 mkdir ./GB5-test-32037e55c3
+
+# 检测curl是否安装
+if ! command -v curl
+then
+    # 安装curl
+    if command -v dnf
+    then
+        dnf -y install curl
+    elif command -v yum
+    then
+        yum -y install curl
+    elif command -v apt
+    then
+        apt -y install curl
+    fi
+    # 再次检测curl是否安装成功
+    if ! command -v curl
+    then
+        exit
+    fi
+fi
 
 # 检测内存
 mem=$(free -m | awk '/Mem/{print $2}')
