@@ -153,7 +153,7 @@ tar -xf ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz -C ./GB5-test-32037e5
 _yellow "测试中"
 
 ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux/geekbench_x86_64 | \
-    awk '/System Information/ {flag=1} flag && count<68 {print; count++} /https.*cpu\/[0-9]*$/{print "测试结果链接：" $0}'
+    awk '/System Information/ {flag=1} flag && count<68 {print; count++} /https.*cpu\/[0-9]*$/{print "测试结果链接：" $0} /https.*key\=[0-9]*$/{print "保存链接：" $0}'
 
 _blue "⬆将链接复制到浏览器即可查看详细结果⬆"
 
