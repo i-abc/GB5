@@ -62,7 +62,7 @@ _blue "本机Swap为：${old_swap}Mi"
 _blue "本机内存加Swap总计：${old_ms}Mi\n"
 
 # 判断内存+Swap是否小于1G
-if [ "$old_ms" -ge 1024 ]
+if [ "$old_ms" -ge 1100 ]
 then
     _yellow "经判断，本机内存加Swap和大于1G，满足GB5测试条件，测试开始。\n"
 else
@@ -87,7 +87,7 @@ else
             # 再次判断内存+Swap是否小于1G
             new_swap=$(free -m | awk '/Swap/{print $2}')
             new_ms=$((mem+new_swap))
-            if [ "$new_ms" -ge 1024 ]
+            if [ "$new_ms" -ge 1100 ]
             then
                 echo
                 _blue "经判断，现在内存加Swap和为${new_ms}Mi，满足GB5测试条件，测试开始。\n"
