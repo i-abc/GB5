@@ -56,34 +56,58 @@ fi
 # 检测内存
 mem=$(free -m | awk '/Mem/{print $2}')
 old_swap=$(free -m | awk '/Swap/{print $2}')
-ms=$((mem+old_swap))
-echo -e "
-本机内存为：${mem}Mi\n\
-本机Swap为：${old_swap}Mi\n\
-本机内存加Swap总计：${ms}Mi"
+old_ms=$((mem+old_swap))
+echo -e "本机内存为：${mem}Mi"
+echo -e "本机Swap为：${old_swap}Mi"
+echo -e "本机内存加Swap总计：${old_ms}Mi"
 
 # 判断内存+Swap是否小于1G
-if [ "$ms" -ge 1024 ]
+if [ "$old_ms" -ge 1024 ]
 then
     echo "经判断，本机内存加Swap和大于1G，满足GB5测试条件，测试开始。"
 else
     echo "经判断，本机内存加Swap和小于1G，不满足GB5测试条件，有如下解决方案："
-    echo -e "
-1. 添加Swap（该操作脚本自动完成，且在GB5测试结束后会把本机恢复原样）\n\
-2. 退出测试"
-    echo "请输入您的选择："
+    echo -e "1. 添加Swap（该操作脚本自动完成，且在GB5测试结束后会把本机恢复原样）"
+    echo -e "2. 退出测试"
+    echo -e "请输入您的选择：\c"
     # 添加Swap
-    read -r choice
-    case "$choice" in
+    read -r choice_1
+    case "$choice_1" in
         2)
             rm -rf ./GB5-test-32037e55c3
             exit;;
         1)
-            need_swap=$((1100-ms))
+            echo "添加Swap任务开始，完成时间取决于硬盘速度，请耐心等候"
+            need_swap=$((1100-old_ms))
             dd if=/dev/zero of=./GB5-test-32037e55c3/dd bs=1M count="$need_swap"
             chmod 600 ./GB5-test-32037e55c3/dd
             mkswap ./GB5-test-32037e55c3/dd
-            swapon ./GB5-test-32037e55c3/dd;;
+            swapon ./GB5-test-32037e55c3/dd
+            # 再次判断内存+Swap是否小于1G
+            new_swap=$(free -m | awk '/Swap/{print $2}')
+            new_ms=$((mem+new_swap))
+            if [ "$new_ms" -ge 1024 ]
+            then
+                echo "经判断，现在内存加Swap和为${new_ms}Mi，满足GB5测试条件，测试开始。"
+            else
+                echo "很抱歉，由于未知原因，Swap未能成功新增，现在内存加Swap和为${new_ms}Mi，仍不满足GB5测试条件，有如下备选方案："
+                echo -e "1. 强制执行GB5测试"
+                echo -e "2. 退出测试"
+                echo -e "请输入您的选择：\c"
+                read -r choice_2
+                case "$choice_2" in
+                    2)
+                        swapoff ./GB5-test-32037e55c3/dd &> /dev/null
+                        rm -rf ./GB5-test-32037e55c3
+                        exit;;
+                    1)
+                        echo ;;
+                    *)
+                        rm -rf ./GB5-test-32037e55c3
+                        echo "输入错误，请重新执行脚本"
+                        exit;;
+                esac
+            fi;;
         *)
             rm -rf ./GB5-test-32037e55c3
             echo "输入错误，请重新执行脚本"
