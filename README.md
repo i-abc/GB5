@@ -16,6 +16,12 @@
 ## 使用方法
 
 ```
+bash <(wget -qO- gb5.top)
+```
+
+或
+
+```
 bash <(wget -qO- https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5/main/gb5-test.sh)
 ```
 
