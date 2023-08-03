@@ -16,6 +16,12 @@
 ## 使用方法
 
 ```
+bash <(curl -sL gb5.top)
+```
+
+或
+
+```
 bash <(wget -qO- gb5.top)
 ```
 

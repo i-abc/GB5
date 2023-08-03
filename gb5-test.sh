@@ -25,7 +25,7 @@ clear
 GB5_version="v2023-08-03"
 
 echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
-echo -e '#          专用于境内服务器的GB5测试           #'
+echo -e '#            专用于服务器的GB5测试             #'
 echo -e '#                 '$GB5_version'                  #'
 echo -e '#        https://github.com/i-abc/gb5          #'
 echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
