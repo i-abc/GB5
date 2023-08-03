@@ -46,3 +46,4 @@ bash <(wget -qO- https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5
 - [x] 将分数直接展示到终端
 - [ ] 在测试后会提供同种 CPU 的对比
 - [ ] 增加更多 CPU 方面的测试
+- [ ] lxc 添加 Swap 失败
