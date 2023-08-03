@@ -197,7 +197,12 @@ _yellow "测试中"
 
 # 下载测试结果
 result_download_url=$(grep -E "https.*cpu\/[0-9]*$" ./GB5-test-32037e55c3/gb5-output.txt)
-wget -O ./GB5-test-32037e55c3/index.html $result_download_url 2> /dev/null
+if wget --spider $result_download_url 2> /dev/null
+then
+    wget -O ./GB5-test-32037e55c3/index.html $result_download_url 2> /dev/null
+else
+    wget --no-check-certificate  -O ./GB5-test-32037e55c3/index.html $result_download_url 2> /dev/null
+fi
 
 # 输出分数、链接
 _yellow "Geekbench 5 测试结果"
