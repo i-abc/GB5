@@ -135,7 +135,11 @@ GB5_official_sha256=32037e55c3dc8f360fe16b7fbb188d31387ea75980e48d8cf028330e3239
 _yellow "GB5测试程序下载中 (该文件较大)"
 # 判断是否为境内IP
 country=$(curl ipinfo.io/country 2> /dev/null)
-if [ "$country" != "CN" ]
+if [ -z "$country" ] || echo "$country" | grep "{" > /dev/null
+then
+    echo "使用镜像源"
+    curl --progress-bar -o ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz "$url_2"
+elif [ "$country" != "CN" ]
 then
     echo "使用默认源"
     curl --progress-bar -o ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz "$url_1"
