@@ -10,7 +10,8 @@
 4. 针对内存不足 1G 的服务器，会自动添加 Swap
 5. 测试无残留，测试产生的文件、Swap 会自动清除，让服务器保持原样
 6. 人性化的交互，操作无门槛
-7. 测试结果详细、易于分享
+7. 终端可直接输出测试分数，更加方便
+7. 提供测试结果链接、易于分享
 8. 提供保存链接，可将结果保存到个人账户
 
 ## 使用方法
@@ -33,12 +34,16 @@ bash <(wget -qO- https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5
 
 ## 使用截图
 
+- 完整过程
+
 ![](https://cdn.staticaly.com/gh/i-abc/GB5/main/images/1.gif)
 
-结果链接：[链接](https://browser.geekbench.com/v5/cpu/21531872)
+- 结果
+
+![](https://cdn.staticaly.com/gh/i-abc/GB5/main/images/1.png)
 
 ## 待办
 
-- [ ] 将分数直接展示到终端
+- [x] 将分数直接展示到终端
 - [ ] 在测试后会提供同种 CPU 的对比
 - [ ] 增加更多 CPU 方面的测试
