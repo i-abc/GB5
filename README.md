@@ -35,11 +35,11 @@ bash <(wget -qO- https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5
 
 - 完整过程
 
-![](https://cdn.staticaly.com/gh/i-abc/GB5/main/images/1.gif)
+![](https://github.com/i-abc/GB5/raw/main/images/1.gif)
 
 - 结果
 
-![](https://cdn.staticaly.com/gh/i-abc/GB5/main/images/1.png)
+![](https://github.com/i-abc/GB5/raw/main/images/1.png)
 
 ## 待办
 
