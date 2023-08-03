@@ -193,9 +193,17 @@ tar -xf ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz -C ./GB5-test-32037e5
 _yellow "测试中"
 
 ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux/geekbench_x86_64 | \
-    awk '/System Information/ {flag=1} flag && count<68 {print; count++} /https.*cpu\/[0-9]*$/{print "测试结果链接：" $0} /https.*key=[0-9]*$/{print "保存链接：" $0}'
+    tee >(awk '/System Information/ {flag=1} flag && count<68 {print; count++}') > ./GB5-test-32037e55c3/gb5-output.txt
 
-_blue "⬆将链接复制到浏览器即可查看详细结果⬆"
+# 下载测试结果
+result_download_url=$(grep -E "https.*cpu\/[0-9]*$" ./GB5-test-32037e55c3/gb5-output.txt)
+wget -O ./GB5-test-32037e55c3/index.html $result_download_url 2> /dev/null
+
+# 输出分数、链接
+_yellow "测试结果"
+awk -F'>' '/<div class='"'"'score'"'"'>/{print $2}' ./GB5-test-32037e55c3/index.html | awk -F'<' '{if (NR==1) {print "单核测试分数: "$1} else {print "多核测试分数: "$1}}'
+awk 'BEGIN{i=1}/https.*cpu/{if (i==1) {print "详细结果链接: " $1} else {print "个人保存链接: " $1}; i++}' ./GB5-test-32037e55c3/gb5-output.txt
+_blue "⬆将链接复制到浏览器即可查看详细结果⬆\n"
 
 # 删除残余文件
 swapoff ./GB5-test-32037e55c3/dd &> /dev/null
