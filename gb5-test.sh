@@ -62,6 +62,27 @@ then
     fi
 fi
 
+# 检测fallocate是否安装
+if ! command -v fallocate &> /dev/null
+then
+    # 安装util-linux
+    if command -v dnf &> /dev/null
+    then
+        dnf -y install util-linux
+    elif command -v yum &> /dev/null
+    then
+        yum -y install util-linux
+    elif command -v apt &> /dev/null
+    then
+        apt -y install util-linux
+    fi
+    # 再次检测fallocate是否安装成功
+    if ! command -v fallocate &> /dev/null
+    then
+        exit
+    fi
+fi
+
 # 检测内存
 mem=$(free -m | awk '/Mem/{print $2}')
 old_swap=$(free -m | awk '/Swap/{print $2}')
@@ -89,7 +110,8 @@ else
         1)
             _yellow "添加Swap任务开始，完成时间取决于硬盘速度，请耐心等候\n"
             need_swap=$((1100-old_ms))
-            dd if=/dev/zero of=./GB5-test-32037e55c3/dd bs=1M count="$need_swap"
+#             dd if=/dev/zero of=./GB5-test-32037e55c3/dd bs=1M count="$need_swap"
+            fallocate -l "$need_swap"M ./GB5-test-32037e55c3/dd
             chmod 600 ./GB5-test-32037e55c3/dd
             mkswap ./GB5-test-32037e55c3/dd
             swapon ./GB5-test-32037e55c3/dd
