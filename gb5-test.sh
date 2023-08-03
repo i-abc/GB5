@@ -31,6 +31,10 @@ echo -e '#        https://github.com/i-abc/gb5          #'
 echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
 echo
 
+# 源
+url_1="https://cdn.geekbench.com/Geekbench-5.5.1-Linux.tar.gz"
+url_2="https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5/main/Geekbench-5/Geekbench-5.5.1-Linux.tar.gz"
+
 # 删除可能存在的残余文件
 rm -rf ./GB5-test-32037e55c3
 
@@ -129,7 +133,16 @@ GB5_official_sha256=32037e55c3dc8f360fe16b7fbb188d31387ea75980e48d8cf028330e3239
 
 # 下载GB5测试程序
 _yellow "GB5测试程序下载中 (该文件较大)"
-curl --progress-bar -o ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5/main/Geekbench-5/Geekbench-5.5.1-Linux.tar.gz
+# 判断是否为境内IP
+country=$(curl ipinfo.io/country 2> /dev/null)
+if [ "$country" != "CN" ]
+then
+    echo "使用默认源"
+    curl --progress-bar -o ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz "$url_1"
+else
+    echo "使用镜像源"
+    curl --progress-bar -o ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz "$url_2"
+fi
 _blue "GB5测试程序下载完成\n"
 
 # 比对SHA-256
@@ -147,6 +160,7 @@ else
 fi
 
 # 解压缩包
+_yellow "程序处理中\n"
 tar -xf ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz -C ./GB5-test-32037e55c3
 
 # 测试
