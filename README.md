@@ -51,3 +51,5 @@ bash <(wget -qO- https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5
 - [ ] 在测试后会提供同种 CPU 的对比
 - [ ] 增加更多 CPU 方面的测试
 - [ ] lxc 添加 Swap 失败
+- [ ] 支持中文系统
+- [ ] 支持 ARM
