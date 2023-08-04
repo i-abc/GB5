@@ -177,7 +177,7 @@ else
 fi
 
 # 解压缩包
-_yellow "程序处理中\n"
+_yellow "程序处理中"
 tar -xf ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz -C ./GB5-test-32037e55c3
 
 clear
@@ -190,10 +190,14 @@ echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
 echo
 
 # 测试
-_yellow "测试中"
+_yellow "测试中\n"
+
+start_time=$(date +%s)
 
 ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux/geekbench_x86_64 | \
     tee >(awk '/System Information/ {flag=1} flag && count<68 {print; count++}') > ./GB5-test-32037e55c3/gb5-output.txt
+
+end_time=$(date +%s)
 
 # 下载测试结果
 result_download_url=$(grep -E "https.*cpu\/[0-9]*$" ./GB5-test-32037e55c3/gb5-output.txt)
@@ -204,13 +208,36 @@ else
     wget --no-check-certificate  -O ./GB5-test-32037e55c3/index.html $result_download_url 2> /dev/null
 fi
 
-# 输出分数、链接
-_yellow "Geekbench 5 测试结果"
+# 计算测试运行时间
+execution_time=$((end_time-start_time))
+execution_time_minutes=$((execution_time/60))
+execution_time_seconds=$((execution_time%60))
+
+clear
+
+echo
+echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
+echo -e '#            专用于服务器的GB5测试             #'
+echo -e '#                 '$GB5_version'                  #'
+echo -e '#        https://github.com/i-abc/gb5          #'
+echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
+echo
+
+# 输出时间、分数、链接
+echo "当前时间: $(date +"%Y-%m-%d %H:%M:%S %Z")"
+echo "净测试时长: $execution_time_minutes分$execution_time_seconds秒"
+echo -e "注: 净测试时长指CPU跑分过程所用时间，该指标从宏观上体现CPU处理能力，越短越强\n"
+
+_yellow "Geekbench 5 测试结果\n"
+awk '/System Information/ {flag=1} flag && count<20 {sub("System Information", "系统信息"); sub("Processor Information", "处理器信息"); sub("Memory Information", "内存信息"); print; count++}' ./GB5-test-32037e55c3/gb5-output.txt
 awk -F'>' '/<div class='"'"'score'"'"'>/{print $2}' ./GB5-test-32037e55c3/index.html | awk -F'<' '{if (NR==1) {print "单核测试分数: "$1} else {print "多核测试分数: "$1}}'
-awk 'BEGIN{i=1}/https.*cpu/{if (i==1) {print "详细结果链接: " $1} else {print "个人保存链接: " $1}; i++}' ./GB5-test-32037e55c3/gb5-output.txt
-_blue "⬆将链接复制到浏览器即可查看详细结果⬆\n"
+awk '/https.*cpu\/[0-9]*$/{print "详细结果链接: " $1}' ./GB5-test-32037e55c3/gb5-output.txt
+
+echo
+awk '/https.*key=[0-9]*$/{print "个人保存链接: " $1}' ./GB5-test-32037e55c3/gb5-output.txt
 
 # 删除残余文件
+echo
 swapoff ./GB5-test-32037e55c3/dd &> /dev/null
 rm -rf ./GB5-test-32037e55c3
 _yellow "残余文件清除成功"
