@@ -53,3 +53,5 @@ bash <(wget -qO- https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5
 - [ ] lxc 添加 Swap 失败
 - [ ] 支持中文系统
 - [ ] 支持 ARM
+- [ ] 添加 GB6
+- [ ] 在进行 GB 测试前先进行简单的 CPU 测试，若涉及 Swap 还要测试硬盘，通过后才进行 GB 测试，见 [issue 1](https://github.com/i-abc/GB5/issues/1)
