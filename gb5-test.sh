@@ -22,7 +22,7 @@ _blue() {
 
 clear
 
-GB5_version="v2023-08-03"
+GB5_version="v2023-08-04"
 
 echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
 echo -e '#            专用于服务器的GB5测试             #'
@@ -226,7 +226,7 @@ echo
 
 # 输出时间、分数、链接
 echo "当前时间: $(date +"%Y-%m-%d %H:%M:%S %Z")"
-echo "净测试时长: $execution_time_minutes分$execution_time_seconds秒"
+echo -e "净测试时长: $execution_time_minutes分$execution_time_seconds秒\n"
 
 _yellow "Geekbench 5 测试结果\n"
 awk '/System Information/ {flag=1} flag && count<20 {sub("System Information", "系统信息"); sub("Processor Information", "处理器信息"); sub("Memory Information", "内存信息"); print; count++}' ./GB5-test-32037e55c3/gb5-output.txt
