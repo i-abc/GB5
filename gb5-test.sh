@@ -191,6 +191,7 @@ echo
 
 # 测试
 _yellow "测试中\n"
+echo "若出现 Warning: Geekbench may crash on systems with less than 1GB of RAM 提示无需理会，不影响测试"
 
 start_time=$(date +%s)
 
@@ -226,7 +227,6 @@ echo
 # 输出时间、分数、链接
 echo "当前时间: $(date +"%Y-%m-%d %H:%M:%S %Z")"
 echo "净测试时长: $execution_time_minutes分$execution_time_seconds秒"
-echo -e "注: 净测试时长指CPU跑分过程所用时间，该指标从宏观上体现CPU处理能力，越短越强\n"
 
 _yellow "Geekbench 5 测试结果\n"
 awk '/System Information/ {flag=1} flag && count<20 {sub("System Information", "系统信息"); sub("Processor Information", "处理器信息"); sub("Memory Information", "内存信息"); print; count++}' ./GB5-test-32037e55c3/gb5-output.txt
