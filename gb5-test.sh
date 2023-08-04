@@ -31,6 +31,39 @@ echo -e '#        https://github.com/i-abc/gb5          #'
 echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
 echo
 
+# 检测curl、fallocate、tar是否安装
+_yellow "检测所需软件包是否安装\n"
+if ! (command -v curl && command -v fallocate && command -v tar)
+then
+    # 安装curl、fallocate、tar
+    if command -v dnf
+    then
+        dnf -y install curl util-linux tar
+    elif command -v yum
+    then
+        yum -y install curl util-linux tar
+    elif command -v apt
+    then
+        apt -y install curl util-linux tar
+    fi
+    # 再次检测curl、fallocate、tar是否安装成功
+    if ! (command -v curl && command -v fallocate && command -v tar)
+    then
+        _red "自动安装curl、fallocate、tar失败"
+        echo "请手动安装curl、fallocate、tar后再执行该脚本"
+        exit
+    fi
+fi
+
+clear
+
+echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
+echo -e '#            专用于服务器的GB5测试             #'
+echo -e '#                 '$GB5_version'                  #'
+echo -e '#        https://github.com/i-abc/gb5          #'
+echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
+echo
+
 # 源
 url_1="https://cdn.geekbench.com/Geekbench-5.5.1-Linux.tar.gz"
 url_2="https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5/main/Geekbench-5/Geekbench-5.5.1-Linux.tar.gz"
@@ -40,48 +73,6 @@ rm -rf ./GB5-test-32037e55c3
 
 # 创建工作目录
 mkdir ./GB5-test-32037e55c3
-
-# 检测curl是否安装
-if ! command -v curl &> /dev/null
-then
-    # 安装curl
-    if command -v dnf &> /dev/null
-    then
-        dnf -y install curl
-    elif command -v yum &> /dev/null
-    then
-        yum -y install curl
-    elif command -v apt &> /dev/null
-    then
-        apt -y install curl
-    fi
-    # 再次检测curl是否安装成功
-    if ! command -v curl &> /dev/null
-    then
-        exit
-    fi
-fi
-
-# 检测fallocate是否安装
-if ! command -v fallocate &> /dev/null
-then
-    # 安装util-linux
-    if command -v dnf &> /dev/null
-    then
-        dnf -y install util-linux
-    elif command -v yum &> /dev/null
-    then
-        yum -y install util-linux
-    elif command -v apt &> /dev/null
-    then
-        apt -y install util-linux
-    fi
-    # 再次检测fallocate是否安装成功
-    if ! command -v fallocate &> /dev/null
-    then
-        exit
-    fi
-fi
 
 # 检测内存
 mem=$(free -m | awk '/Mem/{print $2}')
@@ -188,6 +179,15 @@ fi
 # 解压缩包
 _yellow "程序处理中\n"
 tar -xf ./GB5-test-32037e55c3/Geekbench-5.5.1-Linux.tar.gz -C ./GB5-test-32037e55c3
+
+clear
+
+echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
+echo -e '#            专用于服务器的GB5测试             #'
+echo -e '#                 '$GB5_version'                  #'
+echo -e '#        https://github.com/i-abc/gb5          #'
+echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
+echo
 
 # 测试
 _yellow "测试中"
