@@ -1,18 +1,16 @@
 #!/bin/bash
-# 一键即用，无需提前做任何准备
 # 适配 x86_64、aarch64
-# 针对大陆网络优化，大大缩减 GB5 测试程序下载时间
+# 针对大陆优化，缩减 GB5 程序下载时间
 # 拥有 SHA-256 校验，杜绝恶意程序
 # 针对内存不足 1G 的服务器，会自动添加 Swap
-# 测试无残留，测试产生的文件、Swap 会自动清除，让服务器保持原样
-# 人性化的交互，操作无门槛
-# 测试结果详细、易于分享
-# 提供同类型 CPU 供比对参考
+# 测试无残留，测试产生的文件、Swap 会清除
+# 提供详细结果、个人保存链接
+# 提供同类型 CPU 参考
 
 ##### 自定义常量 ######
 
 # 脚本发布版本
-script_version="v2023-08-05"
+script_version="v2023-08-07"
 
 # geekbench5发布版本
 geekbench_version="5.5.1"
@@ -31,7 +29,7 @@ dir="./gb5-github-i-abc"
 ##### 配色 #####
 
 _red() {
-    echo -e "\033{0;31;31m$1\033[0m"
+    echo -e "\033[0;31;31m$1\033[0m"
 }
 
 _yellow() {
@@ -92,7 +90,7 @@ _check_architecture() {
         geekbench_tar_name=Geekbench-$geekbench_version-Linux.tar.gz
         geekbench_tar_folder=Geekbench-$geekbench_version-Linux
         geekbench_official_sha256=$geekbench_x86_64_official_sha256
-        geekbench_software_name=geekbench_x86_64
+        geekbench_software_name=geekbench5
     elif [ "$(uname -m)" == "aarch64" ]; then
         _blue "本机架构：aarch64"
         geekbench_tar_name=Geekbench-$geekbench_version-LinuxARMPreview.tar.gz
@@ -230,8 +228,9 @@ _run_test() {
     # 计时开始
     run_start_time=$(date +"%s")
 
-    $dir/${geekbench_tar_folder}/${geekbench_software_name} | \
-        tee >(awk '/System Information/,/Uploading results to the Geekbench Browser/ {if ($0 ~ /Uploading results to the Geekbench Browser/) exit; print}') > $dir/result.txt
+    # $dir/${geekbench_tar_folder}/${geekbench_software_name} |  tee $dir/result.txt |  awk '/System Information/,/Uploading results to the Geekbench Browser/ {if ($0 ~ /Uploading results to the Geekbench Browser/) exit; print}'
+    # 由于未知原因，在Debian上逐行滚动失效，故awk换为perl
+    $dir/${geekbench_tar_folder}/${geekbench_software_name} | tee $dir/result.txt | perl -ne 'if (/System Information/../Uploading results to the Geekbench Browser/) {if (/Uploading results to the Geekbench Browser/) {exit;} print;}'
 
     # 计时结束
     run_end_time=$(date +"%s")
@@ -270,7 +269,7 @@ _output_summary() {
 
     # 链接
     awk '/https.*cpu\/[0-9]*$/{print "详细结果链接：" $1}' $dir/result.txt
-    cpu=$(awk -F 'with an | processor' '/Benchmark results for/{gsub(/ /,"%20",$2); print $2}' $dir/result.html)
+    cpu=$(awk -F 'with an? | processor' '/Benchmark results for/{gsub(/ /,"%20",$2); print $2}' $dir/result.html)
     echo "可供参考链接：https://browser.geekbench.com/search?k=v5_cpu&q=$cpu"
 
     echo
@@ -291,6 +290,7 @@ _banner
 _check_package wget wget
 _check_package tar tar
 _check_package fallocate util-linux
+_check_package perl perl
 clear
 _banner
 _check_architecture
