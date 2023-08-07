@@ -31,7 +31,7 @@ dir="./gb5-github-i-abc"
 ##### 配色 #####
 
 _red() {
-    echo -e "\033{0;31;31m$1\033[0m"
+    echo -e "\033[0;31;31m$1\033[0m"
 }
 
 _yellow() {
@@ -230,8 +230,9 @@ _run_test() {
     # 计时开始
     run_start_time=$(date +"%s")
 
-    $dir/${geekbench_tar_folder}/${geekbench_software_name} | \
-        tee >(awk '/System Information/,/Uploading results to the Geekbench Browser/ {if ($0 ~ /Uploading results to the Geekbench Browser/) exit; print}') > $dir/result.txt
+    # $dir/${geekbench_tar_folder}/${geekbench_software_name} |  tee $dir/result.txt |  awk '/System Information/,/Uploading results to the Geekbench Browser/ {if ($0 ~ /Uploading results to the Geekbench Browser/) exit; print}'
+    # 由于未知原因，在Debian上逐行滚动失效，故awk换为perl
+    $dir/${geekbench_tar_folder}/${geekbench_software_name} | tee $dir/result.txt | perl -ne 'if (/System Information/../Uploading results to the Geekbench Browser/) {if (/Uploading results to the Geekbench Browser/) {exit;} print;}'
 
     # 计时结束
     run_end_time=$(date +"%s")
@@ -270,7 +271,7 @@ _output_summary() {
 
     # 链接
     awk '/https.*cpu\/[0-9]*$/{print "详细结果链接：" $1}' $dir/result.txt
-    cpu=$(awk -F 'with an | processor' '/Benchmark results for/{gsub(/ /,"%20",$2); print $2}' $dir/result.html)
+    cpu=$(awk -F 'with an? | processor' '/Benchmark results for/{gsub(/ /,"%20",$2); print $2}' $dir/result.html)
     echo "可供参考链接：https://browser.geekbench.com/search?k=v5_cpu&q=$cpu"
 
     echo
@@ -291,6 +292,7 @@ _banner
 _check_package wget wget
 _check_package tar tar
 _check_package fallocate util-linux
+_check_package perl perl
 clear
 _banner
 _check_architecture
