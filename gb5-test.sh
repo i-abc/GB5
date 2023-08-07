@@ -141,7 +141,9 @@ _check_swap() {
             1)
                 _yellow "添加Swap任务开始，完成时间取决于硬盘速度，请耐心等候\n"
                 need_swap=$((1100-old_ms))
-                fallocate -l "$need_swap"M $dir/swap
+                # fallocate -l "$need_swap"M $dir/swap
+                # fallocate在RHEL6、7上创建swap失败，见https://access.redhat.com/solutions/4570081
+                dd if=/dev/zero of=$dir/swap bs=1M count=$need_swap
                 chmod 0600 $dir/swap
                 mkswap $dir/swap
                 swapon $dir/swap
