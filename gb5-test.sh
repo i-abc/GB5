@@ -107,6 +107,7 @@ _check_architecture() {
 ##### 创建目录 #####
 _make_dir() {
     # 删除可能存在的残余文件
+    swapoff $dir/swap &> /dev/null
     rm -rf $dir
 
     # 创建目录
