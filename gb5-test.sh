@@ -10,7 +10,7 @@
 ##### 自定义常量 ######
 
 # 脚本发布版本
-script_version="v2023-08-07"
+script_version="v2023-08-08"
 
 # geekbench5发布版本
 geekbench_version="5.5.1"
@@ -21,7 +21,7 @@ geekbench_aarch64_official_sha256="9eb3ca9ec32abf0ebe1c64002b19108bfea53c411c6b5
 
 # 下载源
 url_1="https://cdn.geekbench.com"
-url_2="https://ghproxy.com/https://github.com/i-abc/GB5/releases/download/Geekbench-$geekbench_version"
+url_2="https://jihulab.com/i-abc/gb5/-/raw/main"
 
 # 测试工作目录
 dir="./gb5-github-i-abc"
@@ -107,6 +107,7 @@ _check_architecture() {
 ##### 创建目录 #####
 _make_dir() {
     # 删除可能存在的残余文件
+    swapoff $dir/swap &> /dev/null
     rm -rf $dir
 
     # 创建目录
@@ -123,11 +124,13 @@ _check_swap() {
     _blue "本机Swap：${old_swap}Mi"
     _blue "内存加Swap总计：${old_ms}Mi\n"
 
-    # 判断内存+Swap是否小于1G
-    if [ "$old_ms" -ge "1024" ]; then
-        _yellow "经判断，本机内存加Swap总计大于1G，满足GB5测试条件\n"
+    # 判断内存是否小于1G、或内存+Swap是否小于1.25G，若都小于则加Swap
+    if [ "$mem" -ge "1024" ]; then
+        _yellow "经判断，本机内存大于1G，满足GB5测试条件\n"
+    elif [ "$old_ms" -ge "1280" ]; then
+        _yellow "经判断，本机内存加Swap总计大于1.25G，满足GB5测试条件\n"
     else
-        echo "经判断，本机内存加Swap总计小于1G，不满足GB5测试条件，有如下解决方案："
+        echo "经判断，本机内存小于1G，且内存加Swap总计小于1.25G，不满足GB5测试条件，有如下解决方案："
         echo "1. 添加Swap (该操作脚本自动完成，且在GB5测试结束后会把本机恢复原样)"
         echo -e "2. 退出测试\n"
         _yellow "请输入您的选择 (序号)：\c"
@@ -140,16 +143,18 @@ _check_swap() {
             # 添加Swap
             1)
                 _yellow "添加Swap任务开始，完成时间取决于硬盘速度，请耐心等候\n"
-                need_swap=$((1100-old_ms))
-                fallocate -l "$need_swap"M $dir/swap
+                need_swap=$((1300-old_ms))
+                # fallocate -l "$need_swap"M $dir/swap
+                # fallocate在RHEL6、7上创建swap失败，见https://access.redhat.com/solutions/4570081
+                dd if=/dev/zero of=$dir/swap bs=1M count=$need_swap
                 chmod 0600 $dir/swap
                 mkswap $dir/swap
                 swapon $dir/swap
 
-                # 再次判断内存+Swap是否小于1G
+                # 再次判断内存+Swap是否小于1.25G
                 new_swap=$(free -m | awk '/Swap/{print $2}')
                 new_ms=$((mem+new_swap))
-                if [ "$new_ms" -ge "1024" ]; then
+                if [ "$new_ms" -ge "1280" ]; then
                     echo
                     _blue "经判断，现在内存加Swap总计${new_ms}Mi，满足GB5测试条件\n"
                 else
@@ -243,7 +248,7 @@ _run_test() {
 
 ##### 下载含测试结果的html ######
 _download_result_html() {
-    result_html_url=$(grep -E "https.*cpu\/[0-9]*$" $dir/result.txt)
+    result_html_url=$(grep -E "https.*cpu/[0-9]*$" $dir/result.txt)
 
     if wget --spider $result_html_url 2> /dev/null; then
         wget -O $dir/result.html $result_html_url 2> /dev/null
