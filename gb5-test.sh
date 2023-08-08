@@ -245,7 +245,7 @@ _run_test() {
 
 ##### 下载含测试结果的html ######
 _download_result_html() {
-    result_html_url=$(grep -E "https.*cpu\/[0-9]*$" $dir/result.txt)
+    result_html_url=$(grep -E "https.*cpu/[0-9]*$" $dir/result.txt)
 
     if wget --spider $result_html_url 2> /dev/null; then
         wget -O $dir/result.html $result_html_url 2> /dev/null
