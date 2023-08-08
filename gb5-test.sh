@@ -21,7 +21,7 @@ geekbench_aarch64_official_sha256="9eb3ca9ec32abf0ebe1c64002b19108bfea53c411c6b5
 
 # 下载源
 url_1="https://cdn.geekbench.com"
-url_2="https://ghproxy.com/https://github.com/i-abc/GB5/releases/download/Geekbench-$geekbench_version"
+url_2="https://jihulab.com/i-abc/gb5/-/raw/main"
 
 # 测试工作目录
 dir="./gb5-github-i-abc"
