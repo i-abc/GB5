@@ -188,7 +188,7 @@ _check_swap() {
 
 ##### 判断IP所在地，选择相应下载源 #####
 _check_ip() {
-    country=$(curl "https://ipinfo.io/country" 2> /dev/null)
+    country=$(curl -4 "https://ipinfo.io/country" 2> /dev/null)
     if [ -z "$country" ] || echo "$country" | grep "{"; then
         echo "使用镜像源"
         geekbench_tar_url=${url_2}/${geekbench_tar_name}
@@ -204,7 +204,7 @@ _check_ip() {
 ##### 下载Geekbench tar包 ######
 _download_geekbench() {
     _yellow "测试软件下载中"
-    curl --progress-bar -o "$dir/${geekbench_tar_name}" "$geekbench_tar_url"
+    curl --progress-bar -4 -o "$dir/${geekbench_tar_name}" "$geekbench_tar_url"
 }
 
 ##### 计算SHA-256并比对 #####
@@ -250,10 +250,10 @@ _run_test() {
 _download_result_html() {
     result_html_url=$(grep -E "https.*cpu/[0-9]*$" $dir/result.txt)
 
-    if wget --spider $result_html_url 2> /dev/null; then
-        wget -O $dir/result.html $result_html_url 2> /dev/null
+    if wget -4 --spider $result_html_url 2> /dev/null; then
+        wget -4 -O $dir/result.html $result_html_url 2> /dev/null
     else
-        wget --no-check-certificate -O $dir/result.html $result_html_url 2> /dev/null
+        wget --no-check-certificate -4 -O $dir/result.html $result_html_url 2> /dev/null
     fi
 }
 
