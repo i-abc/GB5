@@ -10,7 +10,7 @@
 ##### 自定义常量 ######
 
 # 脚本发布版本
-script_version="v2023-08-08"
+script_version="v2023-08-11"
 
 # geekbench5发布版本
 geekbench_version="5.5.1"
@@ -188,7 +188,7 @@ _check_swap() {
 
 ##### 判断IP所在地，选择相应下载源 #####
 _check_ip() {
-    country=$(curl ipinfo.io/country 2> /dev/null)
+    country=$(curl "https://ipinfo.io/country" 2> /dev/null)
     if [ -z "$country" ] || echo "$country" | grep "{"; then
         echo "使用镜像源"
         geekbench_tar_url=${url_2}/${geekbench_tar_name}
