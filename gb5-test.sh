@@ -10,7 +10,7 @@
 ##### 自定义常量 ######
 
 # 脚本发布版本
-script_version="v2023-08-13"
+script_version="v2023-08-14"
 
 # geekbench5发布版本
 geekbench_version="5.5.1"
@@ -295,7 +295,7 @@ clear
 _banner
 _check_package wget wget
 _check_package tar tar
-_check_package fallocate util-linux
+# _check_package fallocate util-linux
 _check_package perl perl
 clear
 _banner
