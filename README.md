@@ -17,7 +17,7 @@
 <a target="_blank" href="https://bash.icu/gb5"><img src="https://img.shields.io/website?url=https%3A%2F%2Fbash.icu%2Fgb5&label=bash.icu%2Fgb5&cacheSeconds=300" />
 
 ```
-bash <(curl -sL gb5.top)
+bash <(curl -sL bash.icu/gb5)
 ```
 
 或
