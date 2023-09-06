@@ -14,25 +14,16 @@
 
 ## 使用方法
 
+<a target="_blank" href="https://bash.icu/gb5"><img src="https://img.shields.io/website?url=https%3A%2F%2Fbash.icu%2Fgb5&label=bash.icu%2Fgb5&cacheSeconds=300" />
+
 ```
-bash <(curl -sL gb5.top)
+bash <(curl -sL bash.icu/gb5)
 ```
 
 或
 
 ```
-bash <(wget -qO- gb5.top)
-```
-
-或
-```
-bash <(wget -qO- https://gb5.top)
-```
-
-或
-
-```
-bash <(wget -qO- https://ghproxy.com/https://raw.githubusercontent.com/i-abc/GB5/main/gb5-test.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/i-abc/GB5/main/gb5-test.sh)
 ```
 
 ## 使用截图

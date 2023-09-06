@@ -10,7 +10,7 @@
 ##### 自定义常量 ######
 
 # 脚本发布版本
-script_version="v2023-08-11"
+script_version="v2023-09-06"
 
 # geekbench5发布版本
 geekbench_version="5.5.1"
@@ -42,11 +42,12 @@ _blue() {
 
 ##### 横幅 #####
 _banner() {
-    echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
-    echo -e '#            专用于服务器的GB5测试             #'
-    echo -e '#                 '$script_version'                  #'
-    echo -e '#        https://github.com/i-abc/gb5          #'
-    echo -e '# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #'
+    echo -e "# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #"
+    echo -e "#            专用于服务器的GB5测试             #"
+    echo -e "#                 $script_version                  #"
+    echo -e "#         $(_yellow "bash <(curl -sL bash.icu/gb5)")        #"
+    echo -e "#         https://github.com/i-abc/gb5         #"
+    echo -e "# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #"
     echo
 }
 
@@ -294,7 +295,7 @@ clear
 _banner
 _check_package wget wget
 _check_package tar tar
-_check_package fallocate util-linux
+# _check_package fallocate util-linux
 _check_package perl perl
 clear
 _banner
