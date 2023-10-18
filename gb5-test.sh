@@ -105,8 +105,8 @@ _check_architecture() {
         geekbench_tar_folder=Geekbench-$geekbench_version-LinuxRISCVPreview
         geekbench_official_sha256=$geekbench_riscv64_official_sha256
         geekbench_software_name=geekbench5
-	else
-    echo "本脚本目前只支持x86_64、aarch64、riscv64架构"
+    else
+        echo "本脚本目前只支持x86_64、aarch64、riscv64架构"
         exit
     fi
     _blue "本机虚拟：$(systemd-detect-virt)"
