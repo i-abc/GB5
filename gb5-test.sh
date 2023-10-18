@@ -1,5 +1,5 @@
 #!/bin/bash
-# 适配 x86_64、aarch64
+# 适配 x86_64、aarch64、riscv64
 # 针对大陆优化，缩减 GB5 程序下载时间
 # 拥有 SHA-256 校验，杜绝恶意程序
 # 针对内存不足 1G 的服务器，会自动添加 Swap
@@ -10,7 +10,7 @@
 ##### 自定义常量 ######
 
 # 脚本发布版本
-script_version="v2023-09-06"
+script_version="v2023-10-18"
 
 # geekbench5发布版本
 geekbench_version="5.5.1"
@@ -18,6 +18,7 @@ geekbench_version="5.5.1"
 # geekbench5官方SHA-256
 geekbench_x86_64_official_sha256="32037e55c3dc8f360fe16b7fbb188d31387ea75980e48d8cf028330e3239c404"
 geekbench_aarch64_official_sha256="9eb3ca9ec32abf0ebe1c64002b19108bfea53c411c6b556b0c2689514b8cbd6f"
+geekbench_riscv64_official_sha256="65070301ccedd33bfd4797a19e9d28991fe719cc38570dbc445b8355a5b9bc64"
 
 # 下载源
 url_1="https://cdn.geekbench.com"
@@ -77,7 +78,7 @@ _check_package() {
 }
 
 ##### 确认架构及对应的tar包 #####
-# Geekbench 5、6只支持64位，即x86_64、aarch64
+# Geekbench 5、6只支持64位，即x86_64、aarch64、riscv64
 _check_architecture() {
     # 非64位直接退出
     if [ "$(getconf LONG_BIT)" != "64" ]; then
@@ -85,7 +86,7 @@ _check_architecture() {
         exit
     fi
 
-    # 判断是x86_64还是aarch64
+    # 判断是x86_64、aarch64还是riscv64
     if [ "$(uname -m)" == "x86_64" ]; then
         _blue "本机架构：x86_64"
         geekbench_tar_name=Geekbench-$geekbench_version-Linux.tar.gz
@@ -98,8 +99,14 @@ _check_architecture() {
         geekbench_tar_folder=Geekbench-$geekbench_version-LinuxARMPreview
         geekbench_official_sha256=$geekbench_aarch64_official_sha256
         geekbench_software_name=geekbench5
+    elif [ "$(uname -m)" == "riscv64" ]; then
+        _blue "本机架构：riscv64"
+        geekbench_tar_name=Geekbench-$geekbench_version-LinuxRISCVPreview.tar.gz
+        geekbench_tar_folder=Geekbench-$geekbench_version-LinuxRISCVPreview
+        geekbench_official_sha256=$geekbench_riscv64_official_sha256
+        geekbench_software_name=geekbench5
     else
-        echo "本脚本目前只支持x86_64、aarch64架构"
+        echo "本脚本目前只支持x86_64、aarch64、riscv64架构"
         exit
     fi
     _blue "本机虚拟：$(systemd-detect-virt)"
