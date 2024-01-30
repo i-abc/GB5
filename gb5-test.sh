@@ -115,7 +115,7 @@ _check_architecture() {
 ##### 创建目录 #####
 _make_dir() {
     # 删除可能存在的残余文件
-    swapoff $dir/swap &> /dev/null
+    swapoff $dir/swap &>/dev/null
     rm -rf $dir
 
     # 创建目录
@@ -127,7 +127,7 @@ _check_swap() {
     # 检测内存
     mem=$(free -m | awk '/Mem/{print $2}')
     old_swap=$(free -m | awk '/Swap/{print $2}')
-    old_ms=$((mem+old_swap))
+    old_ms=$((mem + old_swap))
     _blue "本机内存：${mem}Mi"
     _blue "本机Swap：${old_swap}Mi"
     _blue "内存加Swap总计：${old_ms}Mi\n"
@@ -145,62 +145,70 @@ _check_swap() {
         read -r choice_1
         echo -e "\033[0m"
         case "$choice_1" in
-            2)
-                rm -rf $dir
-                exit;;
-            # 添加Swap
-            1)
-                _yellow "添加Swap任务开始，完成时间取决于硬盘速度，请耐心等候\n"
-                need_swap=$((1300-old_ms))
-                # fallocate -l "$need_swap"M $dir/swap
-                # fallocate在RHEL6、7上创建swap失败，见https://access.redhat.com/solutions/4570081
-                dd if=/dev/zero of=$dir/swap bs=1M count=$need_swap
-                chmod 0600 $dir/swap
-                mkswap $dir/swap
-                swapon $dir/swap
+        2)
+            rm -rf $dir
+            exit
+            ;;
+        # 添加Swap
+        1)
+            _yellow "添加Swap任务开始，完成时间取决于硬盘速度，请耐心等候\n"
+            need_swap=$((1300 - old_ms))
+            # fallocate -l "$need_swap"M $dir/swap
+            # fallocate在RHEL6、7上创建swap失败，见https://access.redhat.com/solutions/4570081
+            dd if=/dev/zero of=$dir/swap bs=1M count=$need_swap
+            chmod 0600 $dir/swap
+            mkswap $dir/swap
+            swapon $dir/swap
 
-                # 再次判断内存+Swap是否小于1.25G
-                new_swap=$(free -m | awk '/Swap/{print $2}')
-                new_ms=$((mem+new_swap))
-                if [ "$new_ms" -ge "1280" ]; then
+            # 再次判断内存+Swap是否小于1.25G
+            new_swap=$(free -m | awk '/Swap/{print $2}')
+            new_ms=$((mem + new_swap))
+            if [ "$new_ms" -ge "1280" ]; then
+                echo
+                _blue "经判断，现在内存加Swap总计${new_ms}Mi，满足GB5测试条件\n"
+            else
+                echo
+                echo "很抱歉，由于未知原因，Swap未能成功新增，现在内存加Swap总计${new_ms}Mi，仍不满足GB5测试条件，有如下备选方案："
+                echo "1. 强制执行GB5测试"
+                echo -e "2. 退出测试\n"
+                _yellow "请输入您的选择 (序号)：\c"
+                read -r choice_2
+                echo -e "\033[0m"
+                case "$choice_2" in
+                2)
+                    swapoff $dir/swap
+                    rm -rf $dir
+                    exit
+                    ;;
+                1)
                     echo
-                    _blue "经判断，现在内存加Swap总计${new_ms}Mi，满足GB5测试条件\n"
-                else
-                    echo
-                    echo "很抱歉，由于未知原因，Swap未能成功新增，现在内存加Swap总计${new_ms}Mi，仍不满足GB5测试条件，有如下备选方案："
-                    echo "1. 强制执行GB5测试"
-                    echo -e "2. 退出测试\n"
-                    _yellow "请输入您的选择 (序号)：\c"
-                    read -r choice_2
-                    echo -e "\033[0m"
-                    case "$choice_2" in
-                        2)
-                            swapoff $dir/swap
-                            rm -rf $dir
-                            exit;;
-                        1)
-                            echo ;;
-                        *)
-                            rm -rf $dir
-                            _red "输入错误，请重新执行脚本"
-                            exit;;
-                    esac
-                fi;;
-            *)
-                rm -rf $dir
-                _red "输入错误，请重新执行脚本"
-                exit;;
+                    ;;
+                *)
+                    rm -rf $dir
+                    _red "输入错误，请重新执行脚本"
+                    exit
+                    ;;
+                esac
+            fi
+            ;;
+        *)
+            rm -rf $dir
+            _red "输入错误，请重新执行脚本"
+            exit
+            ;;
         esac
     fi
 }
 
 ##### 判断IP所在地，选择相应下载源 #####
 _check_ip() {
-    country=$(curl -4 "https://ipinfo.io/country" 2> /dev/null)
-    if [ -z "$country" ] || echo "$country" | grep "{"; then
+    local loc
+    loc="$(curl -s 'https://www.visa.cn/cdn-cgi/trace' | awk -F '=' '/loc/{print $2}')"
+    echo "loc: ${loc}"
+    if [ -z "$loc" ]; then
         echo "使用镜像源"
         geekbench_tar_url=${url_2}/${geekbench_tar_name}
-    elif [ "$country" != "CN" ]; then
+    elif [ "$loc" != "CN" ]; then
         echo "使用默认源"
         geekbench_tar_url=${url_1}/${geekbench_tar_name}
     else
@@ -251,17 +259,17 @@ _run_test() {
     # 计算测试运行时间
     run_time=$((run_end_time - run_start_time))
     run_time_minutes=$((run_time / 60))
-    run_time_seconds=$((run_time % 60 ))
+    run_time_seconds=$((run_time % 60))
 }
 
 ##### 下载含测试结果的html ######
 _download_result_html() {
     result_html_url=$(grep -E "https.*cpu/[0-9]*$" $dir/result.txt)
 
-    if wget -4 --spider $result_html_url 2> /dev/null; then
-        wget -4 -O $dir/result.html $result_html_url 2> /dev/null
+    if wget -4 --spider $result_html_url 2>/dev/null; then
+        wget -4 -O $dir/result.html $result_html_url 2>/dev/null
     else
-        wget --no-check-certificate -4 -O $dir/result.html $result_html_url 2> /dev/null
+        wget --no-check-certificate -4 -O $dir/result.html $result_html_url 2>/dev/null
     fi
 }
 
@@ -277,7 +285,7 @@ _output_summary() {
 
     # 分数
     echo
-    awk -F'>' '/<div class='"'"'score'"'"'>/{print $2}' $dir/result.html | \
+    awk -F'>' '/<div class='"'"'score'"'"'>/{print $2}' $dir/result.html |
         awk -F'<' '{if (NR==1) {print "单核测试分数："$1} else {print "多核测试分数："$1}}'
 
     # 链接
@@ -291,11 +299,10 @@ _output_summary() {
 
 ##### 删除残余文件 #####
 _delete_dir() {
-    swapoff $dir/swap &> /dev/null
+    swapoff $dir/swap &>/dev/null
     rm -rf $dir
     _yellow "残余文件清除成功"
 }
-
 
 ##### main #####
 clear
