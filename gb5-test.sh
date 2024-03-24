@@ -1,16 +1,9 @@
 #!/bin/bash
-# 适配 x86_64、aarch64、riscv64
-# 针对大陆优化，缩减 GB5 程序下载时间
-# 拥有 SHA-256 校验，杜绝恶意程序
-# 针对内存不足 1G 的服务器，会自动添加 Swap
-# 测试无残留，测试产生的文件、Swap 会清除
-# 提供详细结果、个人保存链接
-# 提供同类型 CPU 参考
 
 ##### 自定义常量 ######
 
 # 脚本发布版本
-script_version="v2023-10-18"
+script_version="v2024-03-24"
 
 # geekbench5发布版本
 geekbench_version="5.5.1"
@@ -22,7 +15,7 @@ geekbench_riscv64_official_sha256="65070301ccedd33bfd4797a19e9d28991fe719cc38570
 
 # 下载源
 url_1="https://cdn.geekbench.com"
-url_2="https://jihulab.com/i-abc/gb5/-/raw/main"
+url_2="https://asset.bash.icu/https://cdn.geekbench.com"
 
 # 测试工作目录
 dir="./gb5-github-i-abc"
@@ -203,7 +196,7 @@ _check_swap() {
 ##### 判断IP所在地，选择相应下载源 #####
 _check_ip() {
     local loc
-    loc="$(curl -s 'https://www.visa.cn/cdn-cgi/trace' | awk -F '=' '/loc/{print $2}')"
+    loc="$(curl -s -L 'https://www.visa.cn/cdn-cgi/trace' | awk -F '=' '/loc/{print $2}')"
     echo "loc: ${loc}"
     if [ -z "$loc" ]; then
         echo "使用镜像源"
@@ -220,7 +213,7 @@ _check_ip() {
 ##### 下载Geekbench tar包 ######
 _download_geekbench() {
     _yellow "测试软件下载中"
-    curl --progress-bar -4 -o "$dir/${geekbench_tar_name}" "$geekbench_tar_url"
+    curl --progress-bar -o "$dir/${geekbench_tar_name}" -L "$geekbench_tar_url"
 }
 
 ##### 计算SHA-256并比对 #####
