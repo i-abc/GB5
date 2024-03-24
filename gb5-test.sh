@@ -300,6 +300,7 @@ _output_summary() {
 _rm_dir() {
     sudo swapoff $dir/swap &>/dev/null
     rm -rf $dir
+    echo -e "\033[0m"
 }
 
 ##### main #####
