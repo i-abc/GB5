@@ -188,8 +188,19 @@ _check_swap() {
     fi
 }
 
-##### 判断IP所在地，选择相应下载源 #####
+##### 判断IP类型 #####
+# 对 IPv6 单栈的服务器来说进行测试没有意义，
+# 因为要将结果上传到 browser.geekbench.com 后才能拿到最后的跑分，
+# 但 browser.geekbench.com 仅有 IPv4、不支持 IPv6，测了也是白测。
 _check_ip() {
+    if ! curl -s 'https://browser.geekbench.com' --connect-timeout 5 >/dev/null; then
+        echo -e "对 IPv6 单栈的服务器来说进行测试没有意义，\n因为要将结果上传到 browser.geekbench.com 后才能拿到最后的跑分，\n但 browser.geekbench.com 仅有 IPv4、不支持 IPv6，测了也是白测。"
+        exit 1
+    fi
+}
+
+##### 判断IP所在地，选择相应下载源 #####
+_check_region() {
     local loc
     loc="$(curl -s -L 'https://www.qualcomm.cn/cdn-cgi/trace' | awk -F '=' '/loc/{print $2}')"
     echo "loc: ${loc}"
@@ -296,6 +307,7 @@ _main() {
     trap '_rm_dir' EXIT
     clear
     _banner
+    _check_ip
     _check_package wget wget
     _check_package tar tar
     # _check_package fallocate util-linux
@@ -307,7 +319,7 @@ _main() {
     _check_swap
     clear
     _banner
-    _check_ip
+    _check_region
     _download_geekbench
     echo
     _check_sha256
