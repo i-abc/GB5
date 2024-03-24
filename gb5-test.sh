@@ -139,7 +139,6 @@ _check_swap() {
         echo -e "\033[0m"
         case "$choice_1" in
         2)
-            rm -rf $dir
             exit
             ;;
         # 添加Swap
@@ -169,15 +168,12 @@ _check_swap() {
                 echo -e "\033[0m"
                 case "$choice_2" in
                 2)
-                    swapoff $dir/swap
-                    rm -rf $dir
                     exit
                     ;;
                 1)
                     echo
                     ;;
                 *)
-                    rm -rf $dir
                     _red "输入错误，请重新执行脚本"
                     exit
                     ;;
@@ -185,7 +181,6 @@ _check_swap() {
             fi
             ;;
         *)
-            rm -rf $dir
             _red "输入错误，请重新执行脚本"
             exit
             ;;
@@ -291,38 +286,40 @@ _output_summary() {
 }
 
 ##### 删除残余文件 #####
-_delete_dir() {
+_rm_dir() {
     swapoff $dir/swap &>/dev/null
     rm -rf $dir
-    _yellow "残余文件清除成功"
 }
 
 ##### main #####
-clear
-_banner
-_check_package wget wget
-_check_package tar tar
-# _check_package fallocate util-linux
-_check_package perl perl
-clear
-_banner
-_check_architecture
-_make_dir
-_check_swap
-clear
-_banner
-_check_ip
-_download_geekbench
-echo
-_check_sha256
-_unzip_tar
-clear
-_banner
-_run_test
-_download_result_html
-clear
-echo
-_banner
-_output_summary
-echo
-_delete_dir
+_main() {
+    trap '_rm_dir' EXIT
+    clear
+    _banner
+    _check_package wget wget
+    _check_package tar tar
+    # _check_package fallocate util-linux
+    _check_package perl perl
+    clear
+    _banner
+    _check_architecture
+    _make_dir
+    _check_swap
+    clear
+    _banner
+    _check_ip
+    _download_geekbench
+    echo
+    _check_sha256
+    _unzip_tar
+    clear
+    _banner
+    _run_test
+    _download_result_html
+    clear
+    echo
+    _banner
+    _output_summary
+}
+
+_main
