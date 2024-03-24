@@ -1,0 +1,19 @@
+name: Test for sh-dev
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - sh-dev
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: "i-abc/GB5"
+          ref: "sh-dev"
+      - name: Test
+        run: |
+          bash gb5-test.sh
