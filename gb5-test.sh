@@ -52,11 +52,11 @@ _check_package() {
     if ! command -v $1; then
         # 确认包管理器并安装软件包
         if command -v dnf; then
-            dnf -y install $2
+            sudo dnf -y install $2
         elif command -v yum; then
-            yum -y install $2
+            sudo yum -y install $2
         elif command -v apt; then
-            apt -y install $2
+            sudo apt -y install $2
         else
             _blue "本机非RedHat、Debian系，暂不支持自动安装所需的软件包"
             exit
@@ -108,7 +108,7 @@ _check_architecture() {
 ##### 创建目录 #####
 _make_dir() {
     # 删除可能存在的残余文件
-    swapoff $dir/swap &>/dev/null
+    sudo swapoff $dir/swap &>/dev/null
     rm -rf $dir
 
     # 创建目录
@@ -147,10 +147,10 @@ _check_swap() {
             need_swap=$((1300 - old_ms))
             # fallocate -l "$need_swap"M $dir/swap
             # fallocate在RHEL6、7上创建swap失败，见https://access.redhat.com/solutions/4570081
-            dd if=/dev/zero of=$dir/swap bs=1M count=$need_swap
-            chmod 0600 $dir/swap
-            mkswap $dir/swap
-            swapon $dir/swap
+            sudo dd if=/dev/zero of=$dir/swap bs=1M count=$need_swap
+            sudo chmod 0600 $dir/swap
+            sudo mkswap $dir/swap
+            sudo swapon $dir/swap
 
             # 再次判断内存+Swap是否小于1.25G
             new_swap=$(free -m | awk '/Swap/{print $2}')
@@ -287,7 +287,7 @@ _output_summary() {
 
 ##### 删除残余文件 #####
 _rm_dir() {
-    swapoff $dir/swap &>/dev/null
+    sudo swapoff $dir/swap &>/dev/null
     rm -rf $dir
 }
 
