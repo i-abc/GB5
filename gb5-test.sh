@@ -3,7 +3,7 @@
 ##### 自定义常量 ######
 
 # 脚本发布版本
-script_version="v2024-03-24"
+script_version="v2024-05-08"
 
 # geekbench5发布版本
 geekbench_version="5.5.1"
@@ -43,6 +43,13 @@ _banner() {
     echo -e "#         https://github.com/i-abc/gb5         #"
     echo -e "# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #"
     echo
+}
+
+##### 检测locale配置并覆盖为C语言环境 #####
+_check_locale() {
+    if locale -a 2>/dev/null | grep -q "^C$"; then
+        export LC_ALL=C
+    fi
 }
 
 ##### 检测某软件包是否安装，没安则自动安上，目前只支持RedHat、Debian系 #####
@@ -300,6 +307,7 @@ _output_summary() {
 _rm_dir() {
     sudo swapoff $dir/swap &>/dev/null
     rm -rf $dir
+    unset LC_ALL
     echo -e "\033[0m"
 }
 
@@ -308,6 +316,7 @@ _main() {
     trap '_rm_dir' EXIT
     clear
     _banner
+    _check_locale
     _check_ip
     _check_package wget wget
     _check_package tar tar
